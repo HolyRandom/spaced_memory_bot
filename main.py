@@ -24,11 +24,13 @@ main_markup.row('Добавить', 'Список')
 
 
 def connection():
+    """Connect to BD"""
     sql = sqlite3.connect('database.db', detect_types=sqlite3.PARSE_DECLTYPES | sqlite3.PARSE_COLNAMES)
     return sql
 
 
 def create_table():
+    """Create table for work"""
     sql = connection()
     c = sql.cursor()
     c.execute('''CREATE TABLE IF NOT EXISTS tasks(
@@ -42,6 +44,7 @@ def create_table():
 
 
 def current_lvl(task_id):
+    """Get current level of notification for task"""
     sql = connection()
     c = sql.cursor()
     c.execute('''SELECT * FROM tasks  WHERE task_id=?''', (task_id,))
@@ -49,6 +52,7 @@ def current_lvl(task_id):
 
 
 def update_time(task_id, up=None):
+    """Update time of notification"""
     lvl = current_lvl(task_id)
     print(lvl)
     notification = get_notification_lvl()
@@ -70,6 +74,7 @@ def update_time(task_id, up=None):
 
 
 def send_notification():
+    """Send notification about task to user"""
     threading.Timer(20.0, send_notification).start()
     query = '''SELECT * FROM tasks'''
     sql = connection()
@@ -96,6 +101,7 @@ def get_notification_lvl():
 
 
 def add_new_task(user_id, msg, time):
+    """SQL query for add new task"""
     sql = connection()
     c = sql.cursor()
     c.execute('''INSERT INTO tasks(user, task, notification_lvl, notification_time)VALUES (?,?, 1,?)''',
@@ -105,6 +111,7 @@ def add_new_task(user_id, msg, time):
 
 
 def receive_list_tasks(user_id):
+    """Get list of tasks for user"""
     sql = connection()
     c = sql.cursor()
     c.execute('''SELECT * FROM tasks WHERE user=?''',
@@ -143,6 +150,7 @@ def answer(message):
 
 
 def add_task(message):
+    """Create new task for user"""
     notification = get_notification_lvl()
     user_id = message.chat.id
     msg = message.text
