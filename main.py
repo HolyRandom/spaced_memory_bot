@@ -57,13 +57,19 @@ def update_time(task_id, up=None):
     print(lvl)
     notification = get_notification_lvl()
     if up:
-        print(notification[lvl+1])
-        notification_time = datetime.datetime.now() + datetime.timedelta(seconds=notification[lvl+1])
-        query = '''UPDATE tasks SET notification_time=?, notification_lvl=?  WHERE task_id=?'''
-        sql = connection()
-        c = sql.cursor()
-        c.execute(query, (notification_time, lvl+1, task_id,))
-        sql.commit()
+        if lvl == 4:
+            query = '''DELETE FROM tasks WHERE task_id=?'''
+            sql = connection()
+            c = sql.cursor()
+            c.execute(query, (task_id,))
+            sql.commit()
+        else:
+            notification_time = datetime.datetime.now() + datetime.timedelta(seconds=notification[lvl+1])
+            query = '''UPDATE tasks SET notification_time=?, notification_lvl=?  WHERE task_id=?'''
+            sql = connection()
+            c = sql.cursor()
+            c.execute(query, (notification_time, lvl+1, task_id,))
+            sql.commit()
     else:
         notification_time = datetime.datetime.now() + datetime.timedelta(seconds=notification[lvl])
         query = '''UPDATE tasks SET notification_time=? WHERE task_id=?'''
